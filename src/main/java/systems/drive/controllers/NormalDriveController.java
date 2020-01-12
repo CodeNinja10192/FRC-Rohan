@@ -3,8 +3,13 @@ package systems.drive.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import robot.Controller;
 import robot.Devices;
+import robot.Gyro;
 import robot.Controller.Axis;
 import robot.Controller.Button;
 import robot.Controller.ButtonEvent;
@@ -20,6 +25,10 @@ public class NormalDriveController implements IDriveController {
 	private SwerveController swerveController;
 	private Controller driverController;
 	private List<Integer> driverCallbackIds;
+	private PIDController x2PID;
+	private double x2;
+	private double targetHeading;
+	private Gyro gyro;
 	double prevServoAngle;
 	boolean servoSlow = false;
 
@@ -27,6 +36,33 @@ public class NormalDriveController implements IDriveController {
 		driverController = Devices.getDriverController();
 		this.swerveController = swerveController;
 		driverCallbackIds = new ArrayList<>();
+		gyro = Devices.getGyro();
+
+		PIDSource x2Src = new PIDSource() {
+			@Override
+			public void setPIDSourceType(PIDSourceType pidSource) {
+			}
+
+			@Override
+			public double pidGet() {
+				double dAngle = (targetHeading - gyro.getYaw());
+				return Math.sin(dAngle * Math.PI / 180.0);
+			}
+
+			@Override
+			public PIDSourceType getPIDSourceType() {
+				return PIDSourceType.kDisplacement;
+			}
+		};
+
+		PIDOutput x2Out = new PIDOutput() {
+
+			@Override
+			public void pidWrite(double output) {
+				x2 = output;
+			}
+		};
+		x2PID = new PIDController(1.0, 0.0, 0, x2Src, x2Out);
 	}
 
 	@Override
@@ -54,6 +90,7 @@ public class NormalDriveController implements IDriveController {
 	public void deactivate() {
 		LogUtil.log(getClass(), "Deactivating");
 		for (int id : driverCallbackIds) { driverController.unregisterButtonListener(id); }
+		x2PID.disable();
 	}
 
 	@Override
@@ -63,17 +100,28 @@ public class NormalDriveController implements IDriveController {
 	
 			double x1 = driverController.getAxis(Axis.LX);
 			double y1 = driverController.getAxis(Axis.LY);
-			double x2 = driverController.getAxis(Axis.RX);
+			targetHeading = driverController.getAxis(Axis.RX);
+			double x2Normal = driverController.getAxis(Axis.RT) - driverController.getAxis(Axis.LT);
 			double servos = 0;
+			System.out.println("Gyro: " + gyro.getYaw());
+			System.out.println(x2);
 			
 			if (swerveController == null) {
 				LogUtil.error(getClass(), "Swerve Null");
 			} else if (cvtMode == null) {
 				LogUtil.error(getClass(), "CvtMode Null");
 			} else {
-				double multiplier = cvtMode.getSpeedMultiplier();
-				double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
-				swerveController.drive(x1 * multiplier, y1 * multiplier, x2 * x2Multiplier, getServoSlow());
+				if (Math.abs(x2Normal) < 0.15) {
+					x2PID.enable();
+					double multiplier = cvtMode.getSpeedMultiplier();
+					double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
+					swerveController.drive(x1 * multiplier, y1 * multiplier, x2, getServoSlow());
+				} else {
+					x2PID.disable();
+					double multiplier = cvtMode.getSpeedMultiplier();
+					double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
+					swerveController.drive(x1 * multiplier, y1 * multiplier, x2Normal * x2Multiplier, getServoSlow());
+				}
 			}
 
 	}

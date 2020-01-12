@@ -7,8 +7,12 @@
 
 package robot;
 
+import java.io.File;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import systems.ColorSystem;
 import systems.drive.DriveSystem;
+import utilities.DataUtilColor;
 import utilities.LogUtil;
 import utilities.TimingUtil2;
 
@@ -69,10 +73,11 @@ public class Robot extends TimedRobot {
 		self = this;
 
 		TimingUtil2.registerOneTimeCallback(500, () -> { LogUtil.log("TimingUtil2Verification", "TimingUtil2 one time callback worked!"); });
-		LogUtil.log("INIT", "Startin g LogUtil");
+		LogUtil.log("INIT", "Starting LogUtil");
 		Devices.init();
 
 		new DriveSystem();
+		new ColorSystem();
 	}
 
 	@Override public void disabledInit () { LogUtil.log("ROBOT_STATE", "DISABLED");  }
@@ -90,7 +95,11 @@ public class Robot extends TimedRobot {
 	@Override public void autonomousPeriodic () { }
 
 	@Override public void teleopPeriodic () {
-		
+		// try {
+		// 	new DataUtilColor(new File("/home/lvuser/color.csv"));
+		// } catch (Exception e) {
+			
+		// }
 	}
 
 	@Override public void testPeriodic () { }

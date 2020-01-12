@@ -19,7 +19,6 @@ public class SwerveController {
 	public static enum SwerveMode {
 		ROBOT_CENTRIC,
 		FIELD_CENTRIC;
-		// GYRO_CORRECTED; // TODO: implement gyro_corrected mode -- Pretty sure this isn't a mode, like the others. Maybe a flag? It isn't mutually exclusive of the other two.
 	}
 
 	public static enum CvtMode {
@@ -50,7 +49,6 @@ public class SwerveController {
 		this.pivotMap = pivotMap;
 		swerveMode = SwerveMode.ROBOT_CENTRIC;
 		LogUtil.log("SwerveMode", "Switching to: " + swerveMode.toString());
-		// sensors = Devices.getGyro();
 	}
 
 	/*
@@ -97,7 +95,6 @@ public class SwerveController {
 
 	public void drivePolar (double mag, double angD, double x2) {
 		double angR = Math.toRadians(angD);
-		// drive(mag * Math.cos(angR), mag * Math.sin(angR), x2);
 	}
 
 	public void drive (double x1, double y1, double x2, boolean isSlow) {
@@ -124,8 +121,6 @@ public class SwerveController {
 		Vector2 tVec = new Vector2(x1, y1);
 		if (tVec.magnitude() < 0.03) { tVec.reset(); }
 
-		// if (Math.abs(x2) < 1e-10) { x2 = 1e-10; }
-
 		ArrayList<Double> arrayList = new ArrayList<Double>();
 
 		double max = 0.0;
@@ -133,21 +128,7 @@ public class SwerveController {
 			Vector2 vt = piv.getPosition().copy().rotateD(-90.0).unit().multiply(x2).add(tVec);
 			max = Math.max(max, vt.magnitude());
 			pivotMap.get(piv).set(vt);
-
-			// if (piv.getName.equals("FR")) {
-			// 	System.out.println(vt.magnitude());
-			// }
-			// ((CVTPivot)piv).setServoAngle(180);
-			// arrayList.add(piv.getMinVoltage());
-			// arrayList.add(piv.getMaxVoltage());
-			// arrayList.add(piv.getRawVoltage());
-			// arrayList.add(piv.getPivotAngleD());
-			// arrayList.add(piv.getTargetAngleD());
-			// System.out.format("%3.3f, %3.3f, %3.3f, %3.3f\n", ((CVTPivot)piv).getPivotAngleD());
 		}
-
-		// System.out.format("%3.3f, %3.3f, \t%3.3f, %3.3f\n", arrayList.toArray(new Double[4]));
-		// System.out.format("%3.3f, %3.3f, %3.3f, %3.3f\n", arrayList.toArray(new Double[4]));
 		
 		double s = Math.max(Math.sqrt(x1*x1 + y1*y1), Math.abs(x2));
 
@@ -162,8 +143,6 @@ public class SwerveController {
 
 		/* *********** PIVOT CONTROL UPDATES *********** */
 
-		// double minPivotSpeed = OldCvtController.getMinSpeed(pivotMap.keySet());
-
 		for (Entry<Pivot,Vector2> entry : pivotMap.entrySet()) {
 			Pivot piv = entry.getKey();
 			Vector2 v = entry.getValue();
@@ -176,7 +155,6 @@ public class SwerveController {
 				if (v.magnitude() != 0) { piv.setTargetAngleR(v.angleR()); }
 
 				try {
-					// ((CVTPivot) piv).setTransmission((cvtMode == CvtMode.SHIFTING) ? OldCvtController.calculateServoAngle(mag, minPivotSpeed) : cvtMode.getServoAngle());
 				} catch (Exception e) {
 					LogUtil.warn(getClass(), String.format("%s is not a CVTPivot!", piv.getName()));
 				}

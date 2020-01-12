@@ -31,22 +31,16 @@ public class LogUtil {
 
 			@Override
 			public void init() {
-				// String timeStr = new SimpleDateFormat("yyyyMMdd-HHmmss").format(Calendar.getInstance().getTime());
-				// String path = String.format("/home/lvuser/logs/robotLog-%s.log", timeStr);
 
-				// try { printer = new PrintWriter(new File(path)); } 
-				// catch (Exception e) { System.err.println("Couldn't open file for logging!!"); }
 			}
 
 			@Override
 			public void postStateUpdate() throws Exception {
-				// if (printer == null) { return; }
 				int nMsg; synchronized (queue) { nMsg = queue.size(); }
 				for (int i = 0; i < nMsg; i++) {
 					String msg; synchronized (queue) { msg = queue.poll(); }
 					if (msg != null) { System.out.println(msg); }
 				}
-				// printer.flush();
 			}
 
 			@Override public void preStateUpdate() throws Exception { }

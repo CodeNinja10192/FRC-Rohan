@@ -73,17 +73,6 @@ public class Robot extends TimedRobot {
 		Devices.init();
 
 		new DriveSystem();
-		// new IntakeSystem();
-		// new GrabberSystem();
-		// new HabSystem();
-
-		// TimingUtil2.registerRecurringCallback(0, 1000, () -> {
-		// 	if (Devices.getCompressor().enabled()) { count3++; }
-		// });
-		// TimingUtil2.registerRecurringCallback(0, 30000, () -> {
-		// 	LogUtil.log("COMPRESSOR", String.format("Compressor was on %.2f%% of the time in the last 30 seconds.", (count3/0.300)));
-		// 	count3 = 0;
-		// });
 	}
 
 	@Override public void disabledInit () { LogUtil.log("ROBOT_STATE", "DISABLED");  }
@@ -101,18 +90,7 @@ public class Robot extends TimedRobot {
 	@Override public void autonomousPeriodic () { }
 
 	@Override public void teleopPeriodic () {
-		// long now = System.currentTimeMillis();
-		// if (now - count2 >= 1000) {
-		// 	if (Devices.getCompressor().enabled()) {
-		// 		count3++;
-		// 	}
-		// 	count2 = now;
-		// }
-		// if (now - count >= 30000) {
-		// 	LogUtil.log("COMPRESSOR", String.format("Compressor was on %.2f%% of the time in the last 30 seconds.", (count3/0.300)));
-		// 	count3 = 0;
-		// 	count = now;
-		// }
+		
 	}
 
 	@Override public void testPeriodic () { }

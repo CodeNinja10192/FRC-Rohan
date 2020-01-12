@@ -34,8 +34,6 @@ public class DataUtil {
 
 
                 for (int i = 0; i < size; i++) {
-
-                    // maybe not double
                     CvtData val;
 
                     synchronized (queue) {

@@ -48,7 +48,6 @@ public class Pivot {
 		minV = Double.MAX_VALUE;
 
 		this.config = PivotConfig.getCfg(id);
-		// config.printConfig();
 
 		flipDrive = false;
 		targetAngleD = 0.0;
@@ -59,7 +58,6 @@ public class Pivot {
 			@Override
 			public void pidWrite (double output) {
 				super.pidWrite(output);
-				// if ("FL".equals(config.name)) { System.out.println(output); }
 			}
 		};
 
@@ -75,41 +73,22 @@ public class Pivot {
 				flipDrive = (90.0 <= dAngleAbs) && (dAngleAbs <= 270.0);
 				double sin = Math.sin(dAngle * Math.PI / 180.0);
 				sin = (flipDrive) ? -sin : sin;
-				return sin; // (flipDrive) ? -sin : sin;
+				return sin;
 			}
 
 		};
 
-		// steerPidController = new PIDController(1.0, 0.0, 0.0075, 0.0, resolver, steerMotor, 0.02); // TODO: PID values
-		steerPidController = new PIDController(0.625, 0.0, 0.005, 0.0, resolver, steerMotor, 0.02); // TODO: PID values
+		steerPidController = new PIDController(0.625, 0.0, 0.005, 0.0, resolver, steerMotor, 0.02); 
 
 		lastTime = TimingUtil2.getElapsedTimeInSeconds();
 		calibratedEncoderCount = 0;
-		// lastEncoderCount = steerMotor.getSelectedSensorPosition(0);
 
 		// Thread to track encoder counts
 		TimingUtil2.registerRecurringCallback(0, 20, () -> {
 			double time = TimingUtil2.getElapsedTimeInSeconds();
 			double dt = (time - lastTime);
 
-			// int currentCount = steerMotor.getSelectedSensorPosition(0);
-			// int dCount = (currentCount - lastEncoderCount) * (flipDrive ? -1 : 1);
-			// calibratedEncoderCount += dCount;
-			// maybe not quite this...
-
-			// if (last5Counts.size() == 5) { last5Counts.pop(); }
-			// last5Counts.add(Math.abs(dCount/dt));
-
-			// double vInst = 0;
-			// for (double v : last5Counts) { vInst += v; }
-			// vInst /= last5Counts.size();
-
-			// instantVelocity = vInst;
-			// maxVel = Math.max(maxVel, instantVelocity);
-			// instantVelocity = (dt == 0) ? instantVelocity : (1.0 * dCount / dt); // whatever it was last, I guess...
-
 			lastTime = time;
-			// lastEncoderCount = currentCount;
 		});
 	}
 
@@ -264,17 +243,11 @@ public class Pivot {
 	}
 
 	public int getCalibratedEncoderCounts () {
-		// TODO: implement a reset encoder method (use an offset. reset the offset variable when resetEncoder() is called)
-		// return steerMotor.getSelectedSensorPosition(0);
 		return calibratedEncoderCount;
 	}
 
 	public double getInstantVelocity () {
 		return 0;
-		// return instantVelocity;
-		// double vel = Math.abs(driveMotor.getEncoder().getVelocity());
-		// maxVel = Math.max(vel, maxVel);
-		// return vel;
 	}
 
 }

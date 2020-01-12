@@ -15,7 +15,6 @@ public class Gyro {
 	public double getYaw () {
 		double val;
 		synchronized (gyro) { val = gyro.getYaw(); }
-		// return (-val) % 360;
 		return (-val + 360) % 360;
 	}
 

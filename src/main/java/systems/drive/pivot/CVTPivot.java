@@ -40,9 +40,6 @@ public class CVTPivot extends Pivot {
 		super(id);
 		servo = new Servo(config.cvtChannel);
 		setTransmission(0.0);
-
-		// encoder = new Encoder(0, 1);
-
         src = new PIDSource(){
         
             @Override
@@ -82,9 +79,6 @@ public class CVTPivot extends Pivot {
 	public void setTransmission (double transmission) {
 		transmission = MathUtil.constrain(transmission, 0.0, 1.0);
 		transmission *= kRange;
-		// transmission = -(transmission * kRange) + kMaxAngle;
-		// transmission = kNeutralAngle + (kHalfRange * transmission);
-		// System.out.println(transmission);
 
 		servo.setAngle(transmission);
 	}
@@ -113,35 +107,6 @@ public class CVTPivot extends Pivot {
 			setTransmission(0.0); 
 		}
 		super.setSpeed(speed);
-		
-		// double neoSpeed = getNeoSpeed();
-
-		// 	if (servo.getAngle() < 150) {
-
-		// 		pidController.disable();
-		// 		setMotorDirect(speed);
-		// 		System.out.println("1");
-
-		// 	}
-
-		// 	else if (Math.abs(neoSpeed) < Math.abs(eSpeed) - 500) {
-
-		// 		pidController.disable();
-		// 		setMotorDirect(speed);
-		// 		setServoAngle(155);
-		// 		System.out.println("2");
-
-		// 	}
-
-		// 	else if (Math.abs(neoSpeed) >= Math.abs(eSpeed) - 500) {
-
-		// 		pidController.enable();
-		// 		setServoAngle(0);
-		// 		System.out.println("3");
-
-		// 	}
-		// 	// System.out.println(getServoAngle());
-		// 	System.out.println(getNeoSpeed());
 	}
 
 }

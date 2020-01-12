@@ -5,8 +5,8 @@
             "x" : -11.5,
             "y" : 11.625
         },
-        "minVoltage" : 2.4,
-        "maxVoltage" : 2.5,
+        "minVoltage" : 0.202636698,
+        "maxVoltage" : 4.726562016,
         "driveChannel" : 13,
         "steerChannel" : 12,
         "resolverChannel" : 3,
@@ -23,8 +23,8 @@
             "x" : 11.5,
             "y" : 11.625
         },
-        "minVoltage" : 2.4,
-        "maxVoltage" : 2.5,
+        "minVoltage" : 0.205078104,
+        "maxVoltage" : 4.69970655,
         "driveChannel" : 3,
         "steerChannel" : 4,
         "resolverChannel" : 0,
@@ -41,8 +41,8 @@
             "x" : -11.5,
             "y" : -11.625
         },
-        "minVoltage" : 2.4,
-        "maxVoltage" : 2.5,
+        "minVoltage" : 0.209960916,
+        "maxVoltage" : 4.748534670000001,
         "driveChannel" : 14,
         "steerChannel" : 15,
         "resolverChannel" : 2,
@@ -59,8 +59,8 @@
             "x" : 11.5,
             "y" : -11.625
         },
-        "minVoltage" : 2.4,
-        "maxVoltage" : 2.5,
+        "minVoltage" : 0.20751951000000002,
+        "maxVoltage" : 4.703368659000001,
         "driveChannel" : 2,
         "steerChannel" : 1,
         "resolverChannel" : 1,

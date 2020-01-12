@@ -58,23 +58,6 @@ public class DriveSystem extends RobotSystem {
 			callback("reset gyro");
 			Devices.getGyro().resetGyro(); 
 		});
-		
-		driverController.registerButtonListener(ButtonEvent.PRESS, Button.Y, () -> {
-			callback("switch to light align mode...");
-			if (nextDriveController == DriveController.NORMAL) {
-				nextDriveController = DriveController.LIMELIGHT_ALIGN;
-			}
-			else {
-				nextDriveController = DriveController.NORMAL;
-			}
-		});
-
-		driverController.registerButtonListener(ButtonEvent.PRESS, Button.X, () -> {
-			if (currentDriveController == DriveController.OPERATOR) {
-				callback("switch to normal drive mode...");
-				nextDriveController = DriveController.NORMAL;
-			}
-		});
 	}
 
 	@Override

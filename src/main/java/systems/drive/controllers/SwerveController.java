@@ -149,6 +149,8 @@ public class SwerveController {
 			
 			double mag = v.magnitude();
 
+			System.out.println(piv.getName() + " " + piv.getMinVoltage() + " " + piv.getMaxVoltage());
+
 			if(!habDrivePivots) {
 				((CVTPivot)piv).setSpeed(mag, isSlow);
 

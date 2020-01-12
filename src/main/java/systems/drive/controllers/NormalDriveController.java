@@ -75,6 +75,9 @@ public class NormalDriveController implements IDriveController {
 		driverController.registerButtonListener(ButtonEvent.PRESS, Button.X, () -> {
 			setServoSlow(false);
 		});
+		driverController.registerButtonListener(ButtonEvent.PRESS, Button.SELECT, () -> {
+			swerveController.toggleFieldCentric();
+		});
 
 	}
 

@@ -62,7 +62,7 @@ public class NormalDriveController implements IDriveController {
 				x2 = output;
 			}
 		};
-		x2PID = new PIDController(1.0, 0.0, 0, x2Src, x2Out);
+		x2PID = new PIDController(0.9, 0.0, 0, x2Src, x2Out);
 	}
 
 	@Override
@@ -75,6 +75,8 @@ public class NormalDriveController implements IDriveController {
 		driverController.registerButtonListener(ButtonEvent.PRESS, Button.X, () -> {
 			setServoSlow(false);
 		});
+
+		x2PID.enable();
 
 	}
 
@@ -100,8 +102,11 @@ public class NormalDriveController implements IDriveController {
 	
 			double x1 = driverController.getAxis(Axis.LX);
 			double y1 = driverController.getAxis(Axis.LY);
-			targetHeading = driverController.getAxis(Axis.RX);
-			double x2Normal = driverController.getAxis(Axis.RT) - driverController.getAxis(Axis.LT);
+			double x2Normal = driverController.getAxis(Axis.RX);
+
+			System.out.println("Target:" + targetHeading);
+			System.out.println("RX:" + x2Normal);
+
 			double servos = 0;
 			System.out.println("Gyro: " + gyro.getYaw());
 			System.out.println(x2);
@@ -112,14 +117,19 @@ public class NormalDriveController implements IDriveController {
 				LogUtil.error(getClass(), "CvtMode Null");
 			} else {
 				if (Math.abs(x2Normal) < 0.15) {
-					x2PID.enable();
+					if (!x2PID.isEnabled()) {
+						x2PID.enable();
+					}
 					double multiplier = cvtMode.getSpeedMultiplier();
 					double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
 					swerveController.drive(x1 * multiplier, y1 * multiplier, x2, getServoSlow());
 				} else {
-					x2PID.disable();
+					if (x2PID.isEnabled()) {
+						x2PID.disable();
+					}
 					double multiplier = cvtMode.getSpeedMultiplier();
 					double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
+					targetHeading = gyro.getYaw();
 					swerveController.drive(x1 * multiplier, y1 * multiplier, x2Normal * x2Multiplier, getServoSlow());
 				}
 			}

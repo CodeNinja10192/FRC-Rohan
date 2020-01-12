@@ -2,6 +2,12 @@ package systems.drive.controllers;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
+
 import java.util.ArrayList;
 
 import robot.Devices;
@@ -43,12 +49,47 @@ public class SwerveController {
 	private CvtMode cvtMode = CvtMode.SHIFTING;
 	private boolean habDrivePivots;
 
+	private boolean driveStraightFlag = false;
+	
+	private PIDController x2PID;
+
+	private double targetHeading = 0.0;
+	private double x2PidValue;
+	private Gyro gyro;
+
 	HashMap<Pivot,Vector2> pivotMap;
 
 	public SwerveController (HashMap<Pivot,Vector2> pivotMap) {
 		this.pivotMap = pivotMap;
 		swerveMode = SwerveMode.ROBOT_CENTRIC;
 		LogUtil.log("SwerveMode", "Switching to: " + swerveMode.toString());
+
+		PIDSource x2Src = new PIDSource() {
+			@Override
+			public void setPIDSourceType(PIDSourceType pidSource) {
+			}
+
+			@Override
+			public double pidGet() {
+				double dAngle = (targetHeading - gyro.getYaw());
+				return Math.sin(dAngle * Math.PI / 180.0);
+			}
+
+			@Override
+			public PIDSourceType getPIDSourceType() {
+				return PIDSourceType.kDisplacement;
+			}
+		};
+
+		PIDOutput x2Out = new PIDOutput() {
+
+			@Override
+			public void pidWrite(double output) {
+				x2PidValue = output;
+			}
+		};
+		
+		x2PID = new PIDController(1.0, 0.0, 0, x2Src, x2Out);
 	}
 
 	/*
@@ -97,7 +138,25 @@ public class SwerveController {
 		double angR = Math.toRadians(angD);
 	}
 
+	public void driveStraight (boolean value) {
+		this.driveStraightFlag = value;
+	}
+
+	public boolean getDriveStraight() {
+		return this.driveStraightFlag;
+	}
+
 	public void drive (double x1, double y1, double x2, boolean isSlow) {
+
+		if (driveStraightFlag) {
+			if (!x2PID.isEnabled()) {
+				x2PID.enable();
+			}
+			targetHeading = x2;
+			x2 = x2PidValue;
+		} else if (x2PID.isEnabled()) {
+				x2PID.disable();
+		}
 
 		// Clamp x1, y1, and x2 to be between -1 and 1
 		// Really only matters for x2, since that can go over for gyro-correction
@@ -175,6 +234,8 @@ public class SwerveController {
 		for (Pivot piv : pivotMap.keySet()) {
 			piv.enable();
 		}
+
+		this.gyro = Devices.getGyro();
 	}
 
 	public void disable () {

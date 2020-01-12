@@ -25,7 +25,6 @@ public class NormalDriveController implements IDriveController {
 	private SwerveController swerveController;
 	private Controller driverController;
 	private List<Integer> driverCallbackIds;
-	private PIDController x2PID;
 	private double x2;
 	private double targetHeading;
 	private Gyro gyro;
@@ -37,32 +36,6 @@ public class NormalDriveController implements IDriveController {
 		this.swerveController = swerveController;
 		driverCallbackIds = new ArrayList<>();
 		gyro = Devices.getGyro();
-
-		PIDSource x2Src = new PIDSource() {
-			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {
-			}
-
-			@Override
-			public double pidGet() {
-				double dAngle = (targetHeading - gyro.getYaw());
-				return Math.sin(dAngle * Math.PI / 180.0);
-			}
-
-			@Override
-			public PIDSourceType getPIDSourceType() {
-				return PIDSourceType.kDisplacement;
-			}
-		};
-
-		PIDOutput x2Out = new PIDOutput() {
-
-			@Override
-			public void pidWrite(double output) {
-				x2 = output;
-			}
-		};
-		x2PID = new PIDController(0.9, 0.0, 0, x2Src, x2Out);
 	}
 
 	@Override
@@ -78,9 +51,6 @@ public class NormalDriveController implements IDriveController {
 		driverController.registerButtonListener(ButtonEvent.PRESS, Button.SELECT, () -> {
 			swerveController.toggleFieldCentric();
 		});
-
-		x2PID.enable();
-
 	}
 
 	public void setServoSlow(boolean servoSlow) {
@@ -95,7 +65,6 @@ public class NormalDriveController implements IDriveController {
 	public void deactivate() {
 		LogUtil.log(getClass(), "Deactivating");
 		for (int id : driverCallbackIds) { driverController.unregisterButtonListener(id); }
-		x2PID.disable();
 	}
 
 	@Override
@@ -120,16 +89,12 @@ public class NormalDriveController implements IDriveController {
 				LogUtil.error(getClass(), "CvtMode Null");
 			} else {
 				if (Math.abs(x2Normal) < 0.15) {
-					if (!x2PID.isEnabled()) {
-						x2PID.enable();
-					}
+					swerveController.driveStraight(true);
 					double multiplier = cvtMode.getSpeedMultiplier();
 					double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
-					swerveController.drive(x1 * multiplier, y1 * multiplier, x2, getServoSlow());
+					swerveController.drive(x1 * multiplier, y1 * multiplier, targetHeading, getServoSlow());
 				} else {
-					if (x2PID.isEnabled()) {
-						x2PID.disable();
-					}
+					swerveController.driveStraight(false);
 					double multiplier = cvtMode.getSpeedMultiplier();
 					double x2Multiplier = multiplier * (cvtMode == CvtMode.SHIFTING ? 1.0 : 1.0);
 					targetHeading = gyro.getYaw();

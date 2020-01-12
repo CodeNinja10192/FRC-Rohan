@@ -7,6 +7,11 @@
 
 package robot;
 
+import java.util.ArrayList;
+
+import auton.AutonScheduler;
+import auton.commands.Command;
+import auton.commands.Drive;
 import edu.wpi.first.wpilibj.TimedRobot;
 import systems.drive.DriveSystem;
 import utilities.LogUtil;
@@ -31,6 +36,8 @@ public class Robot extends TimedRobot {
 	private long count = 0;
 	private long count2 = 0;
 	private int count3 = 0;
+
+	private AutonScheduler scheduler;
 
 	public static RobotState getState () {
 		if (self == null || self.isDisabled()) { return RobotState.DISABLED; }
@@ -73,11 +80,21 @@ public class Robot extends TimedRobot {
 		Devices.init();
 
 		new DriveSystem();
+
+		scheduler = new AutonScheduler();
 	}
 
 	@Override public void disabledInit () { LogUtil.log("ROBOT_STATE", "DISABLED");  }
 
-	@Override public void autonomousInit () { LogUtil.log("ROBOT_STATE", "AUTON ENABLED"); }
+	@Override public void autonomousInit () {
+		LogUtil.log("ROBOT_STATE", "AUTON ENABLED");
+
+		ArrayList<Command> commandsList = new ArrayList<Command>();
+		
+		commandsList.add(new Drive(1.0, 0.0, 0, 1.0));
+		// commandsList.add(new Drive(0.4, 0.0, 150, 3.0));
+		scheduler.runRoutine(commandsList);
+	}
 
 	@Override public void teleopInit () { LogUtil.log("ROBOT_STATE", "TELEOP ENABLED");  }
 

@@ -48,7 +48,7 @@ public abstract class RobotSystem {
 
 							case AUTONOMOUS: {
 								if (first) { enable(); autonInit(); }
-								teleopUpdate();
+								autonUpdate();
 							} break;
 
 							case TEST: {
